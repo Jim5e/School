@@ -25,23 +25,17 @@ treenode *findMin(treenode *root);
 
 int main(){
     treenode *n1 = NULL;
-    insertTree(&n1, 25);
-    insertTree(&n1, 14);
-    insertTree(&n1, 27);
-    insertTree(&n1, 12);
-    insertTree(&n1, 15);
-    insertTree(&n1, 6);
-    insertTree(&n1, 9);
+    insertTree(&n1, 7);
     insertTree(&n1, 2);
-    insertTree(&n1, 4);
-    insertTree(&n1, 26);
-    insertTree(&n1, 27); //duplicate test
-    insertTree(&n1, 29);
-    insertTree(&n1, 28);
+    insertTree(&n1, 8);
+    insertTree(&n1, 6);
+    insertTree(&n1, 12);
+    insertTree(&n1, 3);
+ 
 
 
-    // findNum(n1, 12);
-    deleteTree(n1, 27);
+    // // findNum(n1, 12);
+    // deleteTree(n1, 12);
     printTree(n1); //curently using preorder
     free(n1);
 
@@ -123,7 +117,7 @@ treenode *findMin(treenode *root){
     if(root->left == NULL){ //the moment left is empty meaning we have reached a leaf node, indicating it is the smallest
         smallest = root;
         return smallest;
-    }else if(root->left != NULL){ //if left still exists then that means there is POTENTION for something left of that node to be smaller. so we keep going
+    }else if(root->left != NULL){ //if left still exists then that means there is POTENTIAL for something left of that node to be smaller. so we keep going
         return findMin(root->left);
     }
 
