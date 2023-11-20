@@ -16,8 +16,8 @@ int deleteMax(heap *H);
 int getBiggest_C(heap H, int parentNdx);
 void isMember(heap H, int value);
 void heapsort_insertion(heap *H, int arr[], int size);
-void heapsort_heapify((int arr[], int size));
-heap heapify(int arr[], int size, int index);
+void heapsort_heapify(heap *A, int arr[], int size);
+heap *heapify(int arr[], int size);
 void print(heap A);
 
 
@@ -25,6 +25,7 @@ int main(){
     int test[] = {5,10,3,11,4,7,8,13};
     int test_size = sizeof(test) /4;
     heap H = initHeap(&H); //MAX HEAP DONT FORGETTTTTTTTTTT
+    //printf("H last in main: %d\n", H.last);
 
     // insert(&H, 5);
     // insert(&H, 10);
@@ -43,7 +44,9 @@ int main(){
     // heapsort_insertion(&H, test, test_size);
     
     //testing heapsort_heapify
-    heapsort_heapify(test, test_size);
+    heapsort_heapify(&H, test, test_size);
+    print(H);
+
     return 0;
 }
 
@@ -66,34 +69,53 @@ void heapsort_insertion(heap *H, int arr[], int size){
     print(*H);
 }
 
-void heapsort_heapify(int arr[], int size, int index){
-    //build a heap using heapify()
-    heap A = heapify(arr);
-    print(A);
+void heapsort_heapify(heap *A, int arr[], int size){
+//build heap using heapify()
+    heap *catcher = heapify(arr, size);
+    *A = *catcher;
 
+//delete to sort
+    int orig_size = A->last;
+        for(;A->last != -1;){
+            deleteMax(A);
+        }
 
-}
-
-void heapify(int arr[], int size){
-    //use reductive method. start from H.last, moving to index 0
-    //check if parent violates POT, if it does, swap.
-    int parentNdx = H->last;
-    int biggestNdx = getBiggest_C(*H, parentNdx);
-
-    //conditions: if no child (i.e. -1) then dont bother, we have reached max node (so no parent to compare), then actual comparison: if child > parent, swap.
-    while(biggestNdx != -1 && parentNdx < 0 && H->array[biggestNdx] > H->array[parentNdx]){
-        int temp = H->array[parentNdx];
-        H->array[parentNdx] = H->array[biggestNdx];
-        H->array[biggestNdx] = temp;
-
-        parentNdx--;
-        biggestNdx = getBiggest_C(*H, parentNdx);
-    }
+//reset the last
+    A->last = orig_size;
 
 }
 
+heap *heapify(int arr[], int size){
+   //make heap thats to be store
+   heap *H = malloc(sizeof(heap));
+   initHeap(H);
 
+   // transfer to heap
+   for(int i = 0 ; i < size; i++){
+       H->array[i] = arr[i];
+   }
+    H->last = size -1;
 
+   //find lowest lvl parent
+   int lowestParentNdx = getParent(size - 1);
+
+    //printf("Lowest parent: %d\n", H.array[lowestParentNdx]);
+   for (int lowParIndx = lowestParentNdx; lowParIndx >= 0; lowParIndx--) {
+        int biggestNdx = getBiggest_C(*H, lowParIndx);
+        //printf("Biggestindex: %d\n", biggestNdx);
+        //int parentIndx = lowParIndx;
+        while(biggestNdx != -1 && H->array[lowParIndx] < H->array[biggestNdx]) {
+            int temp = H->array[lowParIndx];
+            H->array[lowParIndx] = H->array[biggestNdx];
+            H->array[biggestNdx] = temp;
+
+            lowParIndx = biggestNdx;
+            biggestNdx = getBiggest_C(*H, lowParIndx);
+        }
+   }
+
+   return H;
+}
 
 int deleteMax(heap *H){
     //swap last and root, and then reduce last by 1

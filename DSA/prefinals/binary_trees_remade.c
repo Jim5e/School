@@ -26,7 +26,7 @@ int main(){
     insertNode(&tree, 12);
     insertNode(&tree, 3);
     // deleteNode(tree, 8);
-    deleteNode(tree, 12);
+    // deleteNode(tree, 12);
 
 
     //print
