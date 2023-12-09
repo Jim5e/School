@@ -70,17 +70,17 @@ void heapsort_insertion(heap *H, int arr[], int size){
 }
 
 void heapsort_heapify(heap *A, int arr[], int size){
-//build heap using heapify()
+    //build heap using heapify()
     heap *catcher = heapify(arr, size);
     *A = *catcher;
 
-//delete to sort
+    //delete to sort
     int orig_size = A->last;
-        for(;A->last != -1;){
+        while(A->last != -1){
             deleteMax(A);
-        }
+        }        
 
-//reset the last
+    //reset the last
     A->last = orig_size;
 
 }
@@ -97,18 +97,18 @@ heap *heapify(int arr[], int size){
     H->last = size -1;
 
    //find lowest lvl parent
-   int lowestParentNdx = getParent(size - 1);
+   int lowParIndx = getParent(size - 1);
 
-    //printf("Lowest parent: %d\n", H.array[lowestParentNdx]);
-   for (int lowParIndx = lowestParentNdx; lowParIndx >= 0; lowParIndx--) {
+   for (int lowParIndx; lowParIndx >= 0; lowParIndx--) {
         int biggestNdx = getBiggest_C(*H, lowParIndx);
-        //printf("Biggestindex: %d\n", biggestNdx);
-        //int parentIndx = lowParIndx;
+
         while(biggestNdx != -1 && H->array[lowParIndx] < H->array[biggestNdx]) {
+            //swap
             int temp = H->array[lowParIndx];
             H->array[lowParIndx] = H->array[biggestNdx];
             H->array[biggestNdx] = temp;
 
+            //adjust down like delete()
             lowParIndx = biggestNdx;
             biggestNdx = getBiggest_C(*H, lowParIndx);
         }
