@@ -45,7 +45,7 @@ void insert(heap *heap, int value){
     //place the value at last + 1
     heap->last += 1;
     heap->array[heap->last] = value;
-    //if child > parent, then swap
+    //if child < parent, then swap
     int childNdx = heap->last;
     int parentNdx = get_parent(childNdx);
 
