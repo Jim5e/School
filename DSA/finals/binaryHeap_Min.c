@@ -7,7 +7,7 @@ typedef struct{
     int array[MAX];
     int last;
 
-}heap; s
+}heap;
 
 typedef struct{
     int array[MAX];
