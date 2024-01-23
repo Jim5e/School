@@ -21,23 +21,16 @@ int main(){
 
 LIST *allEven(LIST given){
     LIST *ptr = (LIST *) malloc (sizeof(LIST));
-    ptr->elem = (int *) malloc(sizeof(int) * given.count);
 
     if(ptr != NULL){
-        int newCount = 0;
-        int r = 0;
 
         for(int i = 0; i < given.count;i++){
             if(given.elem[i] % 2 == 0){
-                ptr->elem[r] = given.elem[i];
-                r++;
+                ptr->elem[ptr->count] = given.elem[i];
+                ptr->count++;
             }
         }
 
-        ptr->count = r;
-
-        //adjust
-        ptr->elem = realloc(ptr->elem, sizeof(int) * ptr->count); 
     }
 
     return ptr;
