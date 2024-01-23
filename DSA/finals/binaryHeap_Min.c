@@ -17,6 +17,7 @@ typedef struct{
 
 void initHeap(heap *A);
 void insertElement(heap *A, int value);
+heap *heapify(arrayList samples);
 void deleteMin(heap *A);
 int get_parent(int child);
 void printMinHeap(heap A);
@@ -138,6 +139,7 @@ heap *heapify(arrayList samples){
 
     return genesis;
 }
+
 int get_smallestC(heap A, int parent){
     int leftC_Ndx = ((parent * 2) + 1);
     int rightC_Ndx = ((parent * 2) + 2);
