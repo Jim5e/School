@@ -15,12 +15,15 @@ int main(){
 
     LIST *catcher = allEven(values);
 
+    printf("%d", catcher->count);
+
 
     return 0;
 }
 
 LIST *allEven(LIST given){
     LIST *ptr = (LIST *) malloc (sizeof(LIST));
+    ptr->count = 0;
 
     if(ptr != NULL){
 
