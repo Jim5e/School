@@ -7,6 +7,7 @@ typedef struct{
     int top;
 }stack;
 
+void identifier();
 void initStack(stack *A);
 void push(stack *A, char elem);
 char pop(stack *A);
@@ -16,8 +17,11 @@ bool isFull(stack A);
 void makeNull(stack *A);
 void displayStack(stack *A);
 
+void identifier(){
+    printf("---INITIALIZING ARRAY STACK---\n");
+}
+
 void initStack(stack *A){
-    printf("INITIALIZING ARRAY STACK\n");
     A->top = -1;
 }
 
@@ -66,7 +70,7 @@ void displayStack(stack *A){
     }
 
     while(!isEmpty(temp)){
-        printf("%c", pop(&temp));
+        printf("[%c]\n", pop(&temp));
     }
 }
 

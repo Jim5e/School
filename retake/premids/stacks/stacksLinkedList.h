@@ -6,6 +6,7 @@ typedef struct node{
     struct node* link;
 }*stack;
 
+void identifier();
 void initStack(stack *A);
 void push(stack *A, char elem);
 char pop(stack *A);
@@ -14,8 +15,11 @@ bool isEmpty(stack A);
 void makeNull(stack *A);
 void displayStack(stack *A);
 
+void identifier(){  
+    printf("---LINKED LIST STACK---\n");
+}
+
 void initStack(stack *A){
-    printf("INITIALIZING LINKED LIST STACK\n");
     *A = NULL;
 }
 
@@ -62,7 +66,7 @@ void displayStack(stack *A){
 
     while(!isEmpty(temp)){
         char val = peek(temp);
-        printf("[%c]->", val);
+        printf("[%c]", val);
         push(A,pop(&temp));
     }
 }
