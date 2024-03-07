@@ -124,11 +124,14 @@ void displayCloseDict(closeDic CD);
  	printf("\n\n\nProblem #1:: "); 
  	printf("\n------------");
  	//Declare variables needed for Problem #1
- 	 
+ 	VHeap MAIN;
 	
  	//Function Calls for Problem #1
-	
+	initVHeap(&MAIN);
+	cursorSet catcher = initCursorSet(&MAIN);
 
+	displayVHeap(MAIN);
+	displaySet(catcher);
 /*---------------------------------------------------------------------------------
  * 	Problem #2 ::  1) Populates the Cursor set which is sorted in ascending order *
  *                    according to ID                                             *
@@ -139,6 +142,8 @@ void displayCloseDict(closeDic CD);
 	//Declare variables needed for Problem #2
 	
  	//Function Calls for Problem #2
+	populateSet(&catcher);
+	displaySet(catcher);
 
 /*---------------------------------------------------------------------------------
  * 	Problem #3 ::  1) Converts the Cursor set into an Open Hash Dictionary        *      
@@ -192,13 +197,24 @@ void displayCloseDict(closeDic CD);
  ************************************************************/
  void initVHeap(VHeap *V)
  {
- 	
+ 	V->avail = VH_SIZE-1;
+
+	//Link each node
+	for(int i = V->avail; i >= 0; i--){
+		V->VH_node[i].next = i-1;
+		strcpy(V->VH_node[i].elem.prodID, "    ");
+	}
  }
 
 cursorSet initCursorSet(VHeap *VH)
 {
+	cursorSet newSet;
 
-     
+	newSet.elemIndex = -1;
+	newSet.count = 0;
+	newSet.VHptr = VH;
+    
+	return newSet;
 }
 
 void displayVHeap(VHeap V)
@@ -209,7 +225,7 @@ void displayVHeap(VHeap V)
     printf("\n\nDetails of the Virtual Heap :: ");
     printf("\n------------------------------");
     printf("\nAvailable Index  ::  %d", V.avail  );       //Complete this statement
-	printf("\nVHeap Address    ::  %d" , &V.VH_node );       //Complete this statemet
+	printf("\nVHeap Address    ::  %p" , &V.VH_node );       //Complete this statemet
 	
     printf("\n\n%10s", "Index");
     printf("%10s", "Prod ID");
@@ -217,10 +233,10 @@ void displayVHeap(VHeap V)
 	printf("\n%10s%10s%15s", "-----", "-------","----------");	
      
     //Write your code here 
-	 for(i=0, j=-1; i<VH_SIZE; i++, j++){
-	 	printf("\n\t%d \t\t %d",i, j);
+	 for(int i = 0; i < VH_SIZE -1; i++){
+		 printf("\n\t\t%d\t%s\t\t\t%d", i, V.VH_node[i].elem.prodID,V.VH_node[i].next);
 	 }
-	 
+
 
 	printf("\n\n"); system("Pause");
 }
@@ -240,7 +256,12 @@ void displaySet(cursorSet A)
 	printf("\n%-7s%-12s%-15s%-10s", "--", "----------", "------------", "-----------");
 
 	//Write your code here
-	 
+	 for(int i = A.elemIndex; i != -1; i = A.VHptr->VH_node[i].next){
+		printf("\n\n%-7s", A.VHptr->VH_node[i].elem.prodID);
+		printf("%-12s",A.VHptr->VH_node[i].elem.prodDesc.name);
+		printf("%-15d",A.VHptr->VH_node[i].elem.prodDesc.weight);
+		printf("%-10d",A.VHptr->VH_node[i].next);
+	 }
 	 
 
 	printf("\n\n"); system("Pause");	
@@ -252,13 +273,38 @@ void displaySet(cursorSet A)
  ************************************************************/
 int mallocInVHeap(VHeap *VH)
 {
- 
+ int retval = VH->avail;
+
+ if(retval != -1){
+	VH->avail = VH->VH_node[retval].next;
+ }
+ return retval;
 }
 
 
 void insertSorted(cursorSet *A, product P)
 {
- 	
+ 	int newNode = mallocInVHeap(A->VHptr);
+	if(newNode != -1){
+		int *trav;
+		for(trav = &(A->elemIndex);
+			*trav != -1 && strcmp(P.prodID, A->VHptr->VH_node[*trav].elem.prodID) > 0;
+			trav = &(A->VHptr->VH_node[*trav].next)){}
+
+		if(*trav == -1 || strcmp(P.prodID, A->VHptr->VH_node[*trav].elem.prodID) != 0){
+			A->VHptr->VH_node[newNode].elem = P;
+			A->VHptr->VH_node[newNode].next = *trav;
+			*trav = newNode;
+
+			A->count++;
+		}else{ //already exists
+			printf("Product with ID: %s already exists in the set.\n", P.prodID);
+		}
+
+
+	}else{ // way space
+		printf("No available space. Product with ID: %s cannot be inserted.", P.prodID);
+	}
 }
 
 void populateSet(cursorSet *A)
@@ -283,7 +329,9 @@ void populateSet(cursorSet *A)
 		              };
     //Inserts each element of the array to the cursor set
     //Write your code here!!
-   
+	for(int i = 0; i < COUNT; i++){
+		insertSorted(A, data[i]);
+	}
  
  
 }
@@ -295,7 +343,12 @@ void populateSet(cursorSet *A)
  ************************************************************/
 int openHash(char * prodID)               
 { 
-    
+	int sum = 0;
+    for(int i = 0; prodID[i] != "\0"; i++){
+		sum = sum + (prodID[i] - '0');
+	}
+
+	return sum % OPEN_DSIZE;
 }
 
 
