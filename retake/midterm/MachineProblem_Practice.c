@@ -282,7 +282,7 @@ int mallocInVHeap(VHeap *VH)
 }
 
 
-void insertSorted(cursorSet *A, product P)
+void insertSorted(cursorSet *A, product P) s
 {
  	int newNode = mallocInVHeap(A->VHptr);
 	if(newNode != -1){
