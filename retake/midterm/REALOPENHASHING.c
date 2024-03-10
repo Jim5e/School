@@ -4,7 +4,7 @@
 
 typedef struct node{
     int elem;
-    struct node *link = NULL;
+    struct node *link;
 } *SET;
 
 typedef enum{TRUE,FALSE} Boolean;
@@ -19,7 +19,7 @@ Boolean isMember(Dictionary A, int elem);
 
 int main(){
     Dictionary MAIN;
-    // initDictionary(MAIN);
+    initDictionary(MAIN);
     int given[] = {0, 13, 20, 28, 30, 33, 45, 48, 108};
     
     int i;
