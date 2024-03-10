@@ -153,10 +153,12 @@ void displayCloseDict(closeDic CD);
 	printf("\n\n\nProblem #3:: "); 
  	printf("\n------------");
 	//Declare variables needed for Problem #3
- 	  
+
 	
  	//Function Calls for Problem #3
- 
+	openDic OPENDICT = convertToOpenDict(&catcher);
+	displayOpenDict(OPENDICT);
+	displaySet(catcher);
 
 /*---------------------------------------------------------------------------------
  * 	Problem #4 ::  1) Perform 3 delete operations on the Open Hash Dictionary     *
@@ -169,25 +171,31 @@ void displayCloseDict(closeDic CD);
     char delete01[] = "1703";
     char delete02[] = "1358";    
 	char delete03[] = "1601";
-	
+
  
 //Function Calls for Problem #4	    
-    
+    deleteDict(&OPENDICT, delete01);
+	deleteDict(&OPENDICT, delete02);
+	deleteDict(&OPENDICT, delete03);
+	displayOpenDict(OPENDICT);
+	displayVHeap(MAIN);
     
 
 /*------------------------------------------------------------------------------------
  * 	Problem #5 :: 1) Converts the Open Hash Dictionary into a Closed Hash Dictionary *
  *                2) Displays the Closed Hash Dictionary                             * 
- *                3) Displays the virtual heap                                       *
+ *                3) Displays the virtual heap  
+ *                                     *
  *---------------------------------------------------------------------------------*/	
 	printf("\n\n\nProblem #5:: ");
     printf("\n------------");
     //Declare variables needed for Problem #5
+	closeDic *CLOSED = convertToCloseDict(&OPENDICT);
     
     
     //Function Calls for Problem #5
-	 
-	
+	displayCloseDict(*CLOSED);
+	displayVHeap(MAIN);
 
 	return 0;
 }
@@ -233,8 +241,10 @@ void displayVHeap(VHeap V)
 	printf("\n%10s%10s%15s", "-----", "-------","----------");	
      
     //Write your code here 
-	 for(int i = 0; i < VH_SIZE -1; i++){
-		 printf("\n\t\t%d\t%s\t\t\t%d", i, V.VH_node[i].elem.prodID,V.VH_node[i].next);
+	 for(int i = 0; i < VH_SIZE; i++){
+		printf("\n\n%10d", i);
+		printf("%10s", V.VH_node[i].elem.prodID);
+		printf("%15d", V.VH_node[i].next);
 	 }
 
 
@@ -260,7 +270,7 @@ void displaySet(cursorSet A)
 		printf("\n\n%-7s", A.VHptr->VH_node[i].elem.prodID);
 		printf("%-12s",A.VHptr->VH_node[i].elem.prodDesc.name);
 		printf("%-15d",A.VHptr->VH_node[i].elem.prodDesc.weight);
-		printf("%-10d",A.VHptr->VH_node[i].next);
+		printf("%-10d",i);
 	 }
 	 
 
@@ -282,29 +292,27 @@ int mallocInVHeap(VHeap *VH)
 }
 
 
-void insertSorted(cursorSet *A, product P) s
+void insertSorted(cursorSet *A, product P) 
 {
- 	int newNode = mallocInVHeap(A->VHptr);
-	if(newNode != -1){
 		int *trav;
 		for(trav = &(A->elemIndex);
 			*trav != -1 && strcmp(P.prodID, A->VHptr->VH_node[*trav].elem.prodID) > 0;
 			trav = &(A->VHptr->VH_node[*trav].next)){}
 
 		if(*trav == -1 || strcmp(P.prodID, A->VHptr->VH_node[*trav].elem.prodID) != 0){
-			A->VHptr->VH_node[newNode].elem = P;
-			A->VHptr->VH_node[newNode].next = *trav;
-			*trav = newNode;
+			int newNode = mallocInVHeap(A->VHptr);
+			if(newNode != -1){
+				A->VHptr->VH_node[newNode].elem = P;
+				A->VHptr->VH_node[newNode].next = *trav;
+				*trav = newNode;
+				A->count++;
+			}else{
+				printf("\nNo available space. Product with ID: %s cannot be inserted.", P.prodID);
+			}
 
-			A->count++;
 		}else{ //already exists
-			printf("Product with ID: %s already exists in the set.\n", P.prodID);
+			printf("\nProduct with ID: %s already exists in the set.", P.prodID);
 		}
-
-
-	}else{ // way space
-		printf("No available space. Product with ID: %s cannot be inserted.", P.prodID);
-	}
 }
 
 void populateSet(cursorSet *A)
@@ -341,25 +349,60 @@ void populateSet(cursorSet *A)
 /************************************************************
  *  Problem 3:: Function Definitions                        *
  ************************************************************/
-int openHash(char * prodID)               
-{ 
-	int sum = 0;
-    for(int i = 0; prodID[i] != "\0"; i++){
-		sum = sum + (prodID[i] - '0');
-	}
-
-	return sum % OPEN_DSIZE;
+int openHash(char * prodID) { 
+    int sum = 0;
+    for (int i = 0; prodID[i] != '\0'; i++) {
+            sum += prodID[i] - '0';
+    }
+    return sum % OPEN_DSIZE;
 }
 
 
 openDic initOpenDict(VHeap *VH)
 {
- 
+	openDic newDic;
+	newDic.count = 0;
+	newDic.dicVHptr = VH;
+
+	for(int i = 0; i < OPEN_DSIZE; i++){
+		newDic.header[i] = -1;
+	}
+
+	return newDic;
 }
 
-openDic convertToOpenDict(cursorSet *A)
+openDic convertToOpenDict(cursorSet *A) //can be better but kapoy na
 {
-	 
+	openDic OPEN = initOpenDict(A->VHptr);
+
+	//deleteFirst cursorSet
+	while(A->elemIndex != -1){
+		int temp = A->elemIndex; //save location of temp
+		int ndx = openHash(A->VHptr->VH_node[temp].elem.prodID); //get hash of temp
+		product DATA = A->VHptr->VH_node[temp].elem; //save temp's data
+		A->elemIndex = A->VHptr->VH_node[temp].next; //adjust
+		A->VHptr->VH_node[temp].next = A->VHptr->avail; //free temp()
+		A->VHptr->avail = temp;
+		A->count = A->count - 1;
+
+		//Insert temp inside openDic
+		int *trav = NULL;
+		for(trav = &(OPEN.header[ndx]); *trav != -1 && strcmp(DATA.prodID, A->VHptr->VH_node[*trav].elem.prodID) > 0; trav = &(A->VHptr->VH_node[*trav].next)){}
+
+		if(*trav == -1 || strcmp(DATA.prodID, A->VHptr->VH_node[*trav].elem.prodID) != 0){
+			int newNode = mallocInVHeap(A->VHptr);
+
+			if(newNode != -1){ //add to openDic
+				A->VHptr->VH_node[newNode].elem = DATA;
+				A->VHptr->VH_node[newNode].next = *trav;
+				*trav = newNode;
+				OPEN.count = OPEN.count + 1;
+			}
+		}
+	}
+	
+	
+	return OPEN;
 }
 
 
@@ -377,7 +420,12 @@ void displayOpenDict(openDic D)
 	printf("\n%-7s%15s", "------","----------");
 	
 	//Write your code here
-	
+	for(int x = 0; x < OPEN_DSIZE; x++){
+		printf("\n\nGroup[%d]:",x);
+		for(int trav = D.header[x]; trav != -1; trav = D.dicVHptr->VH_node[trav].next){
+		printf("%15s", D.dicVHptr->VH_node[trav].elem.prodID);
+		}	
+	}
 
     printf("\n\n"); system("Pause");	
 }
@@ -388,12 +436,26 @@ void displayOpenDict(openDic D)
  ************************************************************/
 void freeInVHeap(VHeap *VH, int ndx)
 {
-	 
+	 VH->VH_node[ndx].next = VH->avail;
+	 VH->avail = ndx;
 }
 
 void deleteDict(openDic *D, char *IDen)
-{
- 
+{	
+	int *trav;
+	int hash = openHash(IDen);
+	for(trav = &(D->header[hash]); *trav != -1 && strcmp(IDen, D->dicVHptr->VH_node[*trav].elem.prodID) > 0; trav = &(D->dicVHptr->VH_node[*trav].next)){}
+
+	if(*trav != -1){
+		int temp = *trav;
+		*trav = D->dicVHptr->VH_node[temp].next;
+		freeInVHeap(D->dicVHptr, temp);
+		D->count--;
+		printf("\nProduct with ID: %s is successfully deleted.", IDen);
+
+	}else{
+		printf("\nProduct with ID: %s does NOT exists in the OPEN dictionary.", IDen);
+	}
 }
 
 
@@ -402,20 +464,74 @@ void deleteDict(openDic *D, char *IDen)
  ************************************************************/
 int closeHash(char *ID)
 {
-     
+    int sum = 0;
+    for (int i = 0; ID[i] != '\0'; i++) {
+            sum += ID[i] - '0';
+    }
+    return sum % CLOSE_DSIZE;
 }
 
 
 
 void initCloseDict(closeDic CD)
 {
-	 
+	 for(int i = 0; i < CLOSE_DSIZE; i++){
+		strcpy(CD[i].prodID, EMPTY);
+		strcpy(CD[i].prodDesc.name, "    ");
+	 }
 
 }
  
-closeDic * convertToCloseDict(openDic *D)
-{
-    
+closeDic * convertToCloseDict(openDic *D) //Its wordy para readable, i didnt want to be clever nya libog2 basahon
+{	
+	//init placeholder synonym array & closeDic
+    List synonyms;
+	synonyms.last = -1;
+	closeDic *PRIMES = (closeDic *) malloc (sizeof(*PRIMES));
+
+	//deleteFirst openHash
+	if(*PRIMES != NULL){
+	initCloseDict(*PRIMES);
+		for(int K = 0; K < OPEN_DSIZE; K++){
+			int *trav;
+			for(trav = &(D->header[K]); *trav != -1;){
+				int temp = *trav;
+				*trav = D->dicVHptr->VH_node[temp].next;
+
+				//transfer temp's data into the closeHash
+				int closeNdx = closeHash(D->dicVHptr->VH_node[temp].elem.prodID);
+
+				if(strcmp(D->dicVHptr->VH_node[temp].elem.prodID, EMPTY)==0){ // if its empty, insert it.
+					(*PRIMES)[closeNdx] = D->dicVHptr->VH_node[temp].elem;
+				}else{ // place in synonyms array
+					synonyms.last++;
+					int synNdx = synonyms.last;
+					synonyms.prod[synNdx] = D->dicVHptr->VH_node[temp].elem;
+				}
+
+				//free temp
+				freeInVHeap(D->dicVHptr, temp);
+				D->count--;
+			}
+		}
+
+		//2nd pass, insert synonyms back into closeDic
+		for(int i = 0; i <= synonyms.last; i++){
+			int closeNdx = closeHash(synonyms.prod[i].prodID);
+
+			//traverse closeDic to check for valid placement
+			int cmp = 0;
+			int pos;
+			for(pos = closeNdx; cmp < CLOSE_DSIZE && strcmp((*PRIMES)[pos].prodID, EMPTY) != 0; pos = (pos + 1) % CLOSE_DSIZE){
+				cmp++;
+			}
+
+			(*PRIMES)[pos] = synonyms.prod[i];
+		}
+	}
+
+	return PRIMES;
+
 }	
 
 void displayCloseDict(closeDic CD)
@@ -431,6 +547,11 @@ void displayCloseDict(closeDic CD)
 	printf("\n%-6s%-10s%-15s", "-----", "-------", "----------"); 
 	
 	//Write your code here
+	for(int i = 0; i < CLOSE_DSIZE;i++){
+		printf("\n\n%-6d", i);
+		printf("%-10s", CD[i].prodID);
+		printf("%-15s", CD[i].prodDesc.name);
+	}
 	 
 	
 	printf("\n\n"); system("Pause");
