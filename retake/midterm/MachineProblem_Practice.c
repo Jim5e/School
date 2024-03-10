@@ -1,7 +1,7 @@
 /******************************************************************
  * Project Name:  List, Set and Dictionary                        *
  * Programmer  :  Lawrence James A. Clarit                        *
- * Date Completed: ?                                 *
+ * Date Completed: March 8, 2024                                  *
  ******************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
