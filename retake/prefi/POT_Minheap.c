@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define MAX 10
+#define MAX 15
 
 typedef struct {
     int array[MAX];
@@ -10,7 +10,7 @@ typedef struct {
 //MAJOR functions
 void initMaxHeap(LIST *A);
 void insertElem(LIST *A, int elem);
-void deleteMax(LIST *A);
+void deleteMin(LIST *A);
 void Heapify(LIST *A);
 void Heapsort(LIST *A);
 
@@ -34,28 +34,29 @@ void display(LIST A){
 
 int main (){
     //Variables
-    LIST given  = {{8,2,6,3,4,1,1,723,14,23},9}; //adjust size for testing ra.
+    LIST given  = {{50,23,12,70,43,90,4,5,63,1,33,65,25,14,1}, 14}; //adjust size for testing ra.
 
     display(given);
-    Heapsort(&given);
+    // Heapsort(&given);
+    Heapify(&given);
     display(given);
 
     return 0;
 }
 
-int BIGGEST(LIST H, int parentNdx){
+int SMALLEST(LIST H, int parentNdx){
     int leftNdx = (parentNdx * 2) + 1;
     int rightNdx = (parentNdx * 2) + 2;
-    int biggestNdx = -1;
+    int smallestNdx = parentNdx;
 
-    //check validity of index and also compare
-    if(leftNdx <= H.last && H.array[leftNdx] > H.array[rightNdx]){
-        biggestNdx = leftNdx;
-    }else if(rightNdx <= H.last && H.array[rightNdx] > H.array[leftNdx]){
-        biggestNdx = rightNdx;
+    if(leftNdx <= H.last && H.array[leftNdx] < H.array[smallestNdx]){
+        smallestNdx = leftNdx;
+    }
+    if(rightNdx <= H.last && H.array[rightNdx] < H.array[smallestNdx]){
+        smallestNdx = rightNdx;
     }
 
-    return biggestNdx;
+    return smallestNdx == parentNdx ? -1 : smallestNdx;
 }
 
 void insertElem(LIST *A, int elem){
@@ -69,7 +70,7 @@ void insertElem(LIST *A, int elem){
             int parentNdx = parent(childNdx);
 
             //check POT property
-            if(A->array[parentNdx] < A->array[childNdx]){ //MAX HEAPPPPPPPPPP
+            if(A->array[parentNdx] > A->array[childNdx]){ //MIN HEAP
                 int temp = A->array[parentNdx];
                 A->array[parentNdx] = A->array[childNdx];
                 A->array[childNdx] = temp;
@@ -80,7 +81,7 @@ void insertElem(LIST *A, int elem){
     }
 }
 
-void deleteMax(LIST *A){
+void deleteMin(LIST *A){
     if(A->last > -1){ //check if not empty
         //swap root with last
         int temp = A->array[0];
@@ -90,20 +91,20 @@ void deleteMax(LIST *A){
 
         //push root DOWN since POT is broken
         int parentNdx = 0;
-        int biggestChild;
-        for(biggestChild = BIGGEST(*A, parentNdx); biggestChild != -1 && biggestChild <= A->last;){
+        int smallestChild;
+        for(smallestChild = SMALLEST(*A, parentNdx); smallestChild != -1 && smallestChild <= A->last;){
 
-            if(A->array[parentNdx] < A->array[biggestChild]){
-                //swap parent & bigChild
+            if(A->array[parentNdx] > A->array[smallestChild]){
+                //swap parent & smallChild
                 int temp = A->array[parentNdx];
-                A->array[parentNdx] = A->array[biggestChild];
-                A->array[biggestChild] = temp; 
+                A->array[parentNdx] = A->array[smallestChild];
+                A->array[smallestChild] = temp; 
             }
             
 
             //adjust
-            parentNdx = biggestChild;
-            biggestChild = BIGGEST(*A, parentNdx);
+            parentNdx = smallestChild;
+            smallestChild = SMALLEST(*A, parentNdx);
         }
     }
 }
@@ -113,19 +114,19 @@ void Heapify(LIST *A){
     for(int lowest = parent(A->last); lowest >= 0 ; lowest--){
 
         //fix subtrees
-        int biggestChild;
-        for(int current = lowest, biggestChild = BIGGEST(*A, current); biggestChild != -1 && biggestChild <= A->last;){
+        int smallestChild;
+        for(int current = lowest, smallestChild = SMALLEST(*A, current); smallestChild != -1 && smallestChild <= A->last;){
 
-            if(A->array[current] < A->array[biggestChild]){
-                //swap parent & bigChild
+            if(A->array[current] > A->array[smallestChild]){
+                //swap parent & smallChild
                 int temp = A->array[current];
-                A->array[current] = A->array[biggestChild];
-                A->array[biggestChild] = temp;
+                A->array[current] = A->array[smallestChild];
+                A->array[smallestChild] = temp;
             }
 
             //
-            current = biggestChild;
-            biggestChild = BIGGEST(*A, current);
+            current = smallestChild;
+            smallestChild = SMALLEST(*A, current);
         }
     }
 }
@@ -139,7 +140,7 @@ void Heapsort(LIST *A){
         //delete till sorted
         int og_size = A->last;
         while(A->last != -1){
-            deleteMax(A);
+            deleteMin(A);
         }
 
         A->last = og_size;
