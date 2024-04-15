@@ -3,7 +3,7 @@
 /******************************************************************
  * Project Name: BST and Priority Queue            			      *
  *                        										  *
- * Programmer  :  				                           		  *
+ * Programmer  : LAWRENCE JAMES A. CLARIT  				          *
  * Date Completed: April 29, 2023                                 *
  ******************************************************************/
 #include <stdio.h>
@@ -78,6 +78,10 @@ void displayHeap(minHeap HL);
 void swapProduct(product *x, product *y);
 void heapify(minHeap *H);
 void heapifySubtree(minHeap *H, int subroot);
+
+
+//---Problem #4 --- (PERSONAL)
+void deleteElem(BST *B, VHeap *VH, product P); //To be Coded
  
 
 /************************************************************************************
@@ -101,15 +105,14 @@ void heapifySubtree(minHeap *H, int subroot);
  	printf("\n\n\nProblem #1:: "); 
  	printf("\n------------");
  	//Declare variables needed for Problem #1
- 	VHeap VH;
+ 	VHeap MAIN;
+	BST bstPtr = createMagicalBSTvheap(&MAIN);
 	
  	//Function Calls for Problem #1
-	int root = createMagicalBSTvheap(&VH);
+	displayVHeap(MAIN);
 
-	displayVHeap(VH);              // Partially coded
-
-	printf("\n\nElements of BST B");  //Uncomment and put before the call to displayBSTAscending() 
-	displayBSTAscending(root, VH);
+	printf("\n\nElements of BST B\n");  //Uncomment and put before the call to displayBSTAscending() 
+	displayBSTAscending(bstPtr, MAIN);
 	
  	
 
@@ -130,6 +133,7 @@ void heapifySubtree(minHeap *H, int subroot);
  	printf("\n------------\n");
 	//Declare variables needed for Problem #2
   	product prod01 = {"1109", {"Hersheys", 100}, 100.50, 10};
+	product prodx = {"1550", {"Hersheys", 100}, 100.50, 10};
  	product prod02 = {"1356", {"Ferrero", 200}, 250.75, 85};
     product prod03 = {"1807", {"Mars", 100}, 150.75, 20};
     product prod04 = {"1701", {"Toblerone", 50}, 90.75, 80};
@@ -139,18 +143,16 @@ void heapifySubtree(minHeap *H, int subroot);
 
 
 	//Function Calls for Problem #2
-	BST tempRoot = VH.avail;
-	BST newRoot = -1;
+	insert(&bstPtr, &MAIN, prod01); //#1
+
+	BST empty = -1;
 	
-	insert(&root, &VH, prod01);
-	insert(&newRoot, &VH, prod02);
-	insert(&newRoot, &VH, prod03);
-	insert(&newRoot, &VH, prod04);
-	
+	insert(&empty, &MAIN, prod02); //#2
+	insert(&empty, &MAIN, prod03); //#2
+	insert(&empty, &MAIN, prod04); //#2
+
 	printf("\n\nElements of BST new");  //Uncomment and put before the call to displayBSTAscending()
-	displayBSTAscending(newRoot, VH);
-	
-	
+	displayBSTAscending(empty, MAIN);
   
 	printf("\n\n"); system("pause"); 
 /*---------------------------------------------------------------------------------  
@@ -160,14 +162,35 @@ void heapifySubtree(minHeap *H, int subroot);
 	printf("\n\n\nProblem #3:: "); 
  	printf("\n------------");
 	//Declare variables needed for Problem #3
-	minHeap myHeap = populate();
+	minHeap mHeap = populate();
 
 	
  	//Function Calls for Problem #3
-	displayHeap(myHeap);
-	heapify(&myHeap);
+	displayHeap(mHeap);
 	printf("\nAfter: ");
-	displayHeap(myHeap);
+
+	heapify(&mHeap);
+	displayHeap(mHeap);
+
+	printf("\n\n"); system("pause"); 
+
+/*---------------------------------------------------------------------------------  
+ * 	Problem #4 ::  1) Using the BST in #1, call deleteElem() passing prod01       *    
+ *                 2) Call deleteElem() 3x, passing prod02, prod03, and prod04;   *
+ * 				   3.) Write appropriate error messages							  *
+ *--------------------------------------------------------------------------------*/
+	printf("\n\n\nProblem #4:: "); 
+ 	printf("\n------------");
+
+	//Function Calls for Problem #4
+	deleteElem(&bstPtr, &MAIN, prodx);
+	displayBSTAscending(bstPtr, MAIN);
+
+	printf("\n\nElements of BST new");
+	deleteElem(&bstPtr, &MAIN, prod02);
+	deleteElem(&bstPtr, &MAIN, prod03);
+	deleteElem(&bstPtr, &MAIN, prod04);
+	displayBSTAscending(bstPtr, MAIN);
 
 }
 
@@ -176,25 +199,25 @@ void heapifySubtree(minHeap *H, int subroot);
  ************************************************************/
  BST createMagicalBSTvheap(VHeap *VH)
  {
-	VHeap v = { { {{"1356", {"Ferrero", 200}, 250.75, 85},  8,  2 },
-	              {{"1703", {"Toblerone", 100}, 125.75, 60 }, -1, -1 },
-				  {{"1550", {"Cadbury", 120}, 200.00, 30}, 3, 13 },
- 	              {{"1450", {"Ferrero", 100},150.50, 50},  4, 10 }, 
-				  {{"1310", {"Nestle", 100}, 124.50, 70}, -1, -1 }, 
-				  {{"1688", {"Guylian", 50}, 99.75, 35}, -1, -1 },
- 	              {{"1901", {"Reese", 135}, 150.75, 20}, -1, 11 }, //6
-				  {{"1701", {"Toblerone", 50}, 90.75, 80},  0,  9 }, //root
-				  {{"1109", {"Patchi", 50}, 99.75, 35}, -1, 14 },
- 	              {{"1807", {"Mars", 100}, 150.75, 20},  1, -1 }, 
-				  {{"1455", {"Tango", 75}, 49.50, 100}, -1, -1 }, //10
-				  {{"1150", {"Valor", 120}, 149.50, 90}, -1, -1 }, //11 
- 	              {{"1284", {"Lindt", 100}, 250.75, 15}, -1, -1 },  //12
-				  {{"1601", {"Meiji", 75}, 75.50, 60}, -1,  5 },  //13
-				  {{"1201", {"Kitkat", 50}, 97.75, 40}, -1, 12 }, //14
-	           } ,  6 };
-	*VH = v;
+    VHeap v = { { {{"1356", {"Ferrero", 200}, 250.75, 85},  8,  2 },
+                  {{"1703", {"Toblerone", 100}, 125.75, 60 }, -1, -1 },
+                  {{"1550", {"Cadbury", 120}, 200.00, 30}, 3, 13 },
+                   {{"1450", {"Ferrero", 100},150.50, 50},  4, 10 }, 
+                  {{"1310", {"Nestle", 100}, 124.50, 70}, -1, -1 }, 
+                  {{"1688", {"Guylian", 50}, 99.75, 35}, -1, -1 },
+                   {{"1901", {"Reese", 135}, 150.75, 20}, -1, 11 }, //6
+                  {{"1701", {"Toblerone", 50}, 90.75, 80},  0,  9 }, //root
+                  {{"1109", {"Patchi", 50}, 99.75, 35}, -1, 14 },
+                   {{"1807", {"Mars", 100}, 150.75, 20},  1, -1 }, 
+                  {{"1455", {"Tango", 75}, 49.50, 100}, -1, -1 }, //10
+                  {{"1150", {"Valor", 120}, 149.50, 90}, -1, -1 }, //11 
+                   {{"1284", {"Lindt", 100}, 250.75, 15}, -1, -1 },  //12
+                  {{"1601", {"Meiji", 75}, 75.50, 60}, -1,  5 },  //13
+                  {{"1201", {"Kitkat", 50}, 97.75, 40}, -1, 12 }, //14
+               } ,  6 };
+    *VH = v;
 
-	return 7;	    
+    return 7;        
  }
  
 void displayProduct(product P)
@@ -209,7 +232,13 @@ void displayProduct(product P)
 void displayBSTAscending(BST B, VHeap V)
 {
 	 //Write your code here!!!
+	if(B == -1){
+		return;
+	}
 
+	displayBSTAscending(V.VH_node[B].LC, V);
+	displayProduct(V.VH_node[B].elem);
+	displayBSTAscending(V.VH_node[B].RC, V);
 }
  
 void displayVHeap(VHeap V)
@@ -227,6 +256,12 @@ void displayVHeap(VHeap V)
 	printf("\n%10s%10s%15s%15s", "-----", "-------","--------","--------");	
      
     //Write your code here!!!
+	for(int i = 0;i < VH_SIZE;i++){
+		printf("\n\n%10d", i);
+		printf("%10s", V.VH_node[i].elem.prodID);	
+		printf("%15d", V.VH_node[i].LC);
+		printf("%15d", V.VH_node[i].RC);
+	}
 	
 	printf("\n\n"); system("Pause");
 }
@@ -238,7 +273,31 @@ void displayVHeap(VHeap V)
  void insert(BST *B, VHeap *VH, product P)
  {
  	 //Write your code here!!!
+	if(VH->avail != -1){ //check for space
+		//find position to insert
+		BST *trav;
+		for(trav = B; *trav != -1 && strcmp(P.prodID,VH->VH_node[*trav].elem.prodID) != 0;){
+			trav = (strcmp(P.prodID,VH->VH_node[*trav].elem.prodID) > 0) ? &(VH->VH_node[*trav].RC) : &(VH->VH_node[*trav].LC);
+		}
 
+
+		if(*trav == -1){ //insert if leaf i.e. not found
+			//allocate memory
+			BST temp = VH->avail;
+			VH->avail = VH->VH_node[temp].RC;
+
+			//
+			*trav = temp;
+			VH->VH_node[temp].elem = P;
+			VH->VH_node[temp].LC = -1;
+			VH->VH_node[temp].RC = -1;
+			printf("Successful Insert of Product %s.\n", P.prodID);
+		}else{
+			printf("Unsuccessful Insert of Product %s: Element exists.\n", P.prodID);
+		}
+	}else{
+		printf("Unsuccessful Insert of Product %s: Virtual Heap is Full.\n", P.prodID);
+	}
  }
  
  
@@ -268,7 +327,7 @@ void swapProduct(product *x, product *y)
 	product temp;
 	
 	temp = *x;  
-	x = y; 
+	*x = *y; 
 	*y = temp;
 }
 
@@ -276,22 +335,106 @@ void displayHeap(minHeap HL)
 {
 	int x;
 	
-	printf("\n\nList/Heap :: %d Elements", HL.lastNdx);   //Uncomment and COMPLETE this print statement
+	printf("\n\nList/Heap :: %d Elements", HL.lastNdx + 1);   //Uncomment and COMPLETE this print statement
 	printf("\n========================");
 	
 	//Write your code here!!! 
+	for(int i = 0;i <= HL.lastNdx;i++){
+		printf("\n\n%10s", HL.prod[i].prodID);	
+		printf("%15s", HL.prod[i].prodDesc.name);
+		printf("%15d", HL.prod[i].prodDesc.weight);
+		printf("%15.2f", HL.prod[i].prodPrice);
+		printf("%15d", HL.prod[i].prodQty);
+	}	
 }
 
 
  
 void heapify(minHeap *H)
 {
-     //Write your code here!!!
+    //Write your code here!!!
+	if(H->lastNdx != -1){
+		//lowest lvl parent
+		int parentNdx;
+		for(parentNdx = (H->lastNdx-1)/2; parentNdx >= 0; parentNdx--){
+			heapifySubtree(H, parentNdx);
+		}
+	}
 }
 
+int smallest(minHeap H, int parentNdx){
+    int leftNdx = (parentNdx * 2) + 1;
+    int rightNdx = (parentNdx * 2) + 2;
+    int smallest = -1;
+
+    // Check if left child exists
+    if(leftNdx <= H.lastNdx){
+        smallest = leftNdx;
+        // If right child also exists and is smallest than left child
+        if(rightNdx <= H.lastNdx && strcmp(H.prod[rightNdx].prodID, H.prod[leftNdx].prodID) < 0){
+            smallest = rightNdx;
+        }
+    }
+
+    return smallest;
+}
 
 void heapifySubtree(minHeap *H, int subroot)
 {
      //Write your code here!!!
+	int smallestChild = smallest(*H, subroot);
+
+	 for(int parentNdx = subroot; smallestChild != -1 && smallestChild <= H->lastNdx;){
+		if(strcmp(H->prod[parentNdx].prodID, H->prod[smallestChild].prodID) > 0){ //if child < parent, swap
+		swapProduct(&(H->prod[parentNdx]), &(H->prod[smallestChild]));
+		}
+
+		parentNdx = smallestChild;
+		smallestChild = smallest(*H, parentNdx);
+	 }
+}
+
+
+/************************************************************
+ *  Problem 4:: Function Definitions                         *
+ ************************************************************/
+
+void deleteElem(BST *B, VHeap *VH, product P){
+	//locate elem
+	BST *trav;
+	for(trav = B; *trav != -1 && strcmp(VH->VH_node[*trav].elem.prodID, P.prodID) != 0;){
+		trav = (strcmp(P.prodID, VH->VH_node[*trav].elem.prodID) > 0) ? &(VH->VH_node[*trav].RC) : &(VH->VH_node[*trav].LC);
+	}
+
+	if(*trav != -1){
+		BST temp;
+		if(VH->VH_node[*trav].LC != -1 && VH->VH_node[*trav].RC == -1){
+			temp = *trav;
+			*trav = VH->VH_node[*trav].LC;
+		}else if(VH->VH_node[*trav].LC == -1 && VH->VH_node[*trav].RC != -1){
+			temp = *trav;
+			*trav = VH->VH_node[*trav].RC;
+		}else{
+			//get successor
+			BST *successor;
+			for(successor = &(VH->VH_node[*trav].RC); VH->VH_node[*successor].LC != -1; ){
+				successor = &(VH->VH_node[*trav].LC);
+			}
+
+			temp = *successor;
+			VH->VH_node[*trav].elem = VH->VH_node[*successor].elem;
+			*successor = VH->VH_node[*successor].RC;
+		}
+
+		//deallocate
+			VH->VH_node[temp].RC = VH->avail;
+			VH->VH_node[temp].LC = -1;
+			VH->avail = temp;
+		printf("\n\n Successfuly deleted item with product id: %s", P.prodID);		
+
+
+	}else{
+		printf("\n\nItem with product id: %s, does not Exist in BST", P.prodID);
+	}
 }
 
