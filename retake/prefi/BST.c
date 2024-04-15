@@ -105,7 +105,7 @@ void deleteNode(BST *A, node Elem){
             (*trav)->label = (*successor)->label;
             BST temp = *successor;
             free(temp);
-            (*successor) = NULL;
+            (*successor) = temp->RC;
         }
     }
 }
