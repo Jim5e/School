@@ -13,10 +13,10 @@ BoolGraph *warshall(Graph G);
 void displayMatrix(BoolGraph array);
 
 int main(){
-    Graph MAIN = {{1, 1, 0, 1},
-                {0, 1, 1, 0},
-                {0, 0, 1, 1},
-                {0, 0, 0, 1}
+    Graph MAIN = {{1, 1, 1, 0}, //check geeks for geeks for the answer
+                  {0, 0, 1, 0},
+                  {1, 0, 0, 1},
+                  {0, 0, 0, 1}
                 };
     
     BoolGraph *B = warshall(MAIN);
@@ -58,7 +58,7 @@ BoolGraph *warshall(Graph G){
 }
 
 void displayMatrix(BoolGraph array){
-    int i, j;
+    int i, x;
 	for(i = 0; i < GSIZE; i++){
 		for(x = 0; x < GSIZE; x++){
 			printf("%-5d ", array[i][x]);
