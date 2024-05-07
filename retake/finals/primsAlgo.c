@@ -57,7 +57,7 @@ int main()
    graphType G;
    populateGraph(G);
 
-   primMST P = primAlgo(G, 3);
+   primMST P = primAlgo(G, 0);
    displayPrimMST(P);
  
     return 0; 
@@ -87,28 +87,30 @@ primMST primAlgo(graphType graph, int startVertex)
  set V = {0};
  V[startVertex] = 1;
 
- //find minimum in unvisited nodes
+ //find minimum from vistied to the unvisited nodes
     int min = INFINITY;
     int minDx;
     int u,v;
 
-    for(int count = 0; count < MAX -1 ; count++){
+    while(P.edgeCount < MAX - 1){
         min = INFINITY;
         for(int i = 0; i < MAX; i++){
-            for(int k = 0; k < MAX && V[i] == 1; k++){
-                if(V[k] == 0 && graph[i][k] < min){
-                    //CHECK IF MIN
-                        min = graph[i][k];
-                        minDx = k;
-                        u = i;
-                        v = k;
+            if(V[i] == 1){
+                for(int j = 0; j < MAX && V[i] == 1; j++){
+                    if(V[j] == 0 && graph[i][j] < min){ //visited to the unvisited node, look for minimum
+                        //CHECK IF MIN
+                            min = graph[i][j];
+                            minDx = j;
+                            u = i;
+                            v = j;
+                    }
                 }
             }
+            
         }
-        V[minDx] = 1;
-
-            //add to minDx to V and its data to MST
-            if(P.edgeCount != MAX){
+                    //add to minDx to V and its data to MST
+            if(min != INFINITY){
+            V[minDx] = 1; //set minimum to true
             P.minCost = P.minCost + min;
             P.edges[P.edgeCount].weight = min; 
             P.edges[P.edgeCount].u = u;
