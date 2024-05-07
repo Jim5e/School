@@ -3,7 +3,7 @@
 #define MAX 10
 
 //DS needed in dijkstras are: SET, ARRAY, 2d ARRAY
-#define GSIZE 4
+#define GSIZE 5
 #define INF 9999
 
 typedef int SET[GSIZE]; // Bit-vector implementation of SET
@@ -15,19 +15,19 @@ Graph *FloydWarshall(Graph A);
 
 
 int main(){
-    // Graph MAIN =      { { 0, 4, INF, 5, INF},
-    //                     { INF, 0, 1, INF, 6},
-    //                     { 2, INF, 0, 3, INF},
-    //                     { INF, INF, 1, 0, 2},
-    //                     { 1, INF, INF, 4, 0},
-    //                      };
+    Graph MAIN =      { { 0, 4, INF, 5, INF}, //5
+                        { INF, 0, 1, INF, 6},
+                        { 2, INF, 0, 3, INF},
+                        { INF, INF, 1, 0, 2},
+                        { 1, INF, INF, 4, 0},
+                         };
 
-    Graph MAIN = {
-        {INF, 3, INF, 5},
-        {2, INF, INF, 8},
-        {INF, 1, INF, INF},
-        {INF, INF, 2, INF}
-    };
+    // Graph MAIN = {
+    //     {INF, 3, INF, 5},
+    //     {2, INF, INF, 8},
+    //     {INF, 1, INF, INF},
+    //     {INF, INF, 2, INF}
+    // };
 
 
     Graph *W = FloydWarshall(MAIN);
@@ -58,16 +58,12 @@ void printSolution(int dist[][GSIZE])
 Graph *FloydWarshall(Graph A){
     Graph *W = (Graph *) malloc (sizeof(Graph));
 
-    //copy data
+    //copy data + diagonal
     for(int i = 0; i < GSIZE; i++){
+        (*W)[i][i] = 0;
         for(int k = 0; k < GSIZE;k++){
             (*W)[i][k] = A[i][k];
         }
-    }
-
-    //Diagonal
-    for(int i = 0; i < GSIZE; i++){
-        (*W)[i][i] = 0;
     }
 
     //3  structure for loop
