@@ -78,11 +78,6 @@ void dfscaller(listArr G, Vertex start, listArr result){
          dfs(G, i, Visited, result);  
         }
     }
-
-    for(int i = 0; i < SIZE; i++){
-        printf("%d", Visited[i]);
-        }
-        printf("\n");
 }
 
 void displayDFS(listArr G){
@@ -117,7 +112,7 @@ void dfs(listArr G, Vertex start, Set V, listArr result){
                 result[start] = newNode;
             }
             dfs(G, trav->elem, V, result);
-            // printf("%d ", trav->elem);
+            printf("%d ", trav->elem);
 
         }
 
