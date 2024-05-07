@@ -82,11 +82,13 @@ void bfscaller(listArr G, Vertex start){
 }
 
 void BFS(listArr G, Set V,Vertex start){
+    //set start to visited
+    V[start] = 1;
+    
     //Queue array
     queue Q;
     Q.front = 0;
     Q.rear = SIZE - 1;
-    V[start] = 1;
 
     //Enqueue start
     Q.rear = (Q.rear + 1) % SIZE;
