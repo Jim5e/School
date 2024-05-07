@@ -3,7 +3,7 @@
 #define MAX 10
 
 //DS needed in dijkstras are: SET, ARRAY, 2d ARRAY
-#define GSIZE 5
+#define GSIZE 4
 #define INF 9999
 
 typedef int SET[GSIZE]; // Bit-vector implementation of SET
@@ -22,7 +22,7 @@ int main (){
                {INF, INF, 7, 0}};                
 
     //another test case here
-	// Graph MAIN = {
+	// Graph MAIN = { //8 vertices here
     //     {INF, INF, INF, INF, INF, INF, INF, INF},
     //     {INF, INF, 5, 9, INF, INF, 1, INF},
     //     {INF, 5, INF, INF, 2, INF, INF, INF},
@@ -57,7 +57,7 @@ distances *dijkstras(Graph graph, Vertex V){
 
     // Find shortest path for all vertices
     int count;
-    for(count = 0; count < GSIZE; count++){
+    for(count = 1; count < GSIZE; count++){
 
         //select a vertex by choosing the minimum in distance array that is unvisited
         int minimumD = 9999;
@@ -70,25 +70,28 @@ distances *dijkstras(Graph graph, Vertex V){
                 minimumNdx = x;
             }
         }
+
+        if(minimumNdx == -1) {
+        // No unvisited vertex with a finite distance found, break or return
+        break;
+        }
+
         visited[minimumNdx] = 1; //now we have min, set it to vistied
 
         //using minimum, aim to update the values in distance.
         //do this by: finding an edge that is unvisited, has a connectioned (edge), and when combined is smaller than the current...
         //...distance value in distance
-        int index;
-        for(index = 0; index < GSIZE; index++){
-            if( visited[index] != 1 && //finding an edge that is unvisited,
-                graph[minimumNdx][index] != INF && //has a connectioned (edge),
-                graph[minimumNdx][index] != 0 &&
-                (*distance)[minimumNdx]+ graph[minimumNdx][index] < (*distance)[index]){ //when combined is smaller than the current dist val in distance
+
+        for(int i = 0; i < GSIZE; i++){
+            if( visited[i] != 1 && //finding an edge that is unvisited,
+                // graph[minimumNdx][index] != INF && //has a connectioned (edge),
+                // graph[minimumNdx][index] != 0 &&
+                (*distance)[minimumNdx]+ graph[minimumNdx][i] < (*distance)[i]){ //when combined is smaller than the current dist val in distance
                 
-                (*distance)[index] = graph[minimumNdx][index] + (*distance)[minimumNdx];
+                (*distance)[i] = graph[minimumNdx][i] + (*distance)[minimumNdx];
             }
         }
     }
-
-
-
     return distance;
 }
 
