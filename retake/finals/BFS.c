@@ -7,14 +7,19 @@ typedef struct node {
   struct node *link;
 } *LIST;
 
+typedef struct{
+  int arr[SIZE];
+  int front;
+  int rear;
+}queue;
+
 typedef LIST listArr[SIZE];
 typedef int Vertex;
 typedef int Set[SIZE];
 void initListArr(listArr A);
 void insertSorted(listArr L, int elem, int v);
-void BFS(listArr G, Vertex start);
-void queueElem();
-void dequeue();
+void bfscaller(listArr G, Vertex start);
+void BFS(listArr G, Set V, Vertex start);
 
 int main (){
 
@@ -40,6 +45,8 @@ int main (){
   insertSorted(L, 5, 6);
   insertSorted(L, 3, 6);
 
+  bfscaller(L, 5);
+
  return 0;
 }
 
@@ -61,19 +68,51 @@ void insertSorted(listArr L, int elem, int v) {
     *trav = temp;
   }
 }
+  
+void bfscaller(listArr G, Vertex start){
+    //init Set
+    Set Visited = {0};
+    BFS(G, Visited, start);  
 
-void BFS(listArr G, Vertex start){
-    //Set
-    Set V = {0};
-    V[start] = 1;
-    
+    for(int i = 0; i < SIZE; i++){
+        if(Visited[i] == 0){
+         BFS(G, Visited, i);  
+        }
+    }
+}
+
+void BFS(listArr G, Set V,Vertex start){
     //Queue array
     queue Q;
-    Q.front = NULL;
-    Q.rear = &Q.front;
+    Q.front = 0;
+    Q.rear = SIZE - 1;
+    V[start] = 1;
 
-    for(int count = 0; count != SIZE;){
-        //find adjacent
-        
+    //Enqueue start
+    Q.rear = (Q.rear + 1) % SIZE;
+    Q.arr[Q.rear] = start;
+    printf("\n\n");
+    printf("Start Vert: %d", start);
+
+
+  while((Q.rear + 1 )% SIZE != Q.front){ //while queue is not empty
+    //find adjacent
+    int item = Q.arr[Q.front];
+    LIST trav;
+    for(trav = G[item]; trav != NULL && (Q.rear + 2) % SIZE != Q.front; trav = trav->link){ // while not at the end of list and not full ang queue
+      if(V[trav->elem] == 0){ //enqueue adjacents if unvisited
+        V[trav->elem] = 1; //set to true
+        Q.rear = (Q.rear + 1) % SIZE; 
+        Q.arr[Q.rear] = trav->elem;
+      }
     }
+    //dequeue
+   Q.front = (Q.front + 1) % SIZE;
+  }
+
+  //SET verifier
+  printf("\n");;
+  for(int i = 0; i < SIZE; i++){
+    printf("%d ", V[i]);
+  }
 }
