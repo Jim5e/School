@@ -12,12 +12,12 @@ int main(){
 
 
     //sorting algos
-    // bubblesort(arr);
-    combsort(arr2);
+    bubblesort(arr);
+    // combsort(arr2);
     // printf("%d", (int)(1 / 1.3));
 
 
-    print(arr2);
+    print(arr);
     return 0;
 }
 
@@ -47,7 +47,7 @@ void bubblesort(int *arr){
     int count = MAX;
 
     for(int x = 0; x < count; x++){
-        for(int y = 0; y < count; y++){
+        for(int y = 0; y < count - x; y++){
             if(arr[y] > arr[y + 1]){
                 //swap
                 int temp = arr[y];
