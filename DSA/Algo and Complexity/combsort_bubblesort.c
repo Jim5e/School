@@ -8,7 +8,7 @@ void print(int *arr);
 
 int main(){
     int arr[] = {8, 4, 1, 56, 3, -44, 23, -6, 28, 0};
-    int arr2[]  = {4, -6, 0, 1, 3, -44, 8, 23, 28, 56};
+    int arr2[]  = {4, -6, 0, 1, 3, -44, 8, 23, 28, 5};
 
 
     //sorting algos
